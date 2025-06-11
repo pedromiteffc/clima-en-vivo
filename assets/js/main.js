@@ -116,7 +116,7 @@ function renderRegistros()
 
         tr.innerHTML = `
             <td class="${clase}">${r.descripcion}</td>
-            <td class="${clase}">$${r.monto.toFixed(2)}</td>
+            <td class="${clase}">$${r.monto.toFixed(0)}</td>
             <td>${r.categoria}</td>
             <td>${formatearFecha(r.fecha)}</td>
             <td><button onclick="editarRegistro(${index})">Editar</button></td>
@@ -129,8 +129,8 @@ function renderRegistros()
 
     })
 
-    document.getElementById("totalIngresos").textContent = totalIngresos.toFixed(2)
-    document.getElementById("totalGastos").textContent = totalGastos.toFixed(2)
+    document.getElementById("totalIngresos").textContent = totalIngresos.toFixed(0)
+    document.getElementById("totalGastos").textContent = totalGastos.toFixed(0)
 
 }
 
