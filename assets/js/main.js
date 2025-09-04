@@ -1,138 +1,178 @@
-let categorias = JSON.parse(localStorage.getItem('categorias')) || [
+const TEAMS = ["Pinocho", "GEVP", "San Andres", "Hacoaj","Las Heras", "Def. Hurlingham","Jose Hernandez","3 de Febrero","Sportivo Escobar","Caza y Pesca"]
 
-    'Comida',
-    'Transporte Publico',
-    'Auto',
-    'Otros',
+const $local = document.getElementById('local')
+const $visit = document.getElementById('visitante')
+const $pL = document.getElementById('pLocal')
+const $pV = document.getElementById('pVisitante')
+const $form = document.getElementById('form-partido')
+const $msg = document.getElementById('mensaje')
+const $tbodyTabla = document.getElementById('tbody-tabla')
+const $tbodyRes = document.getElementById('tbody-resultados')
+const $juegos = document.getElementById('juegos')
+const $btnReset = document.getElementById('btn-reset')
 
-]
+let resultados = []
 
-let registros = JSON.parse(localStorage.getItem('registros')) || []
-
-const categoriaSelect = document.getElementById('categoria')
-const tablaRegistros = document.getElementById('tabla-registros')
-
-function renderCategorias()
+function initSelectors()
 {
-    
-    categoriaSelect.innerHTML = '<option value="" disabled selected> Selecciona la categoría ... </option>'
+    TEAMS.forEach( t => {
 
-    categorias.forEach((cat) => {
+        const o1 = document.createElement('option')
+        o1.value = o1.textContent = t
+        $local.appendChild(o1)
 
-        const option = document.createElement('option')
-        option.value = cat
-        option.textContent = cat
-        categoriaSelect.appendChild(option)
+        const o2 = document.createElement('option')
+        o2.value = o2.textContent = t
+        $visit.appendChild(o2)
 
     })
 
-    localStorage.setItem('categorias', JSON.stringify(categorias))
+    $local.selectedIndex = 0
+    $visit.selectedIndex = 1
 
 }
 
-function agregarCategoria()
+function showMsg(text, type='error')
 {
-
-    const nueva = document.getElementById('nuevaCategoria').value.trim()
-
-    if (nueva && !categorias.includes(nueva))
+    if (!text)
     {
-
-        categorias.push(nueva)
-        renderCategorias()
-        document.getElementById('nuevaCategoria').value = ""
-
+        $msg.innerHTML = `<div class="alert ${type}">${text}</div>`
     }
+}
+
+function renderResultados()
+{
+    $tbodyRes.innerHTML = ''
+
+    resultados.forEach ((r, idx) =>{
+
+        const tr = document.createElement('tr')
+        tr.innerHTML = `<td>${idx+1}</td><td class="left">${r.local} vs ${r.visitante}</td><td>${r.pLocal} - ${r.pVisitante}</td><td><button class='btn danger' onclick='eliminar(${idx})'>Eliminar</button></td>`
+        $tbodyRes.appendChild(tr)
+
+    })
+
+    $juegos.textContent=`${resultados.length} partidos cargados`
 
 }
 
-function formatearFecha(date) 
+function eliminar(idx)
 {
-    const d = new Date(date)
-    const dia = d.getDate().toString().padStart(2, "0")
-    const mes = (d.getMonth() + 1).toString().padStart(2, "0")
-    const anio = d.getFullYear()
-    const hora = d.getHours().toString().padStart(2, "0")
-    const minutos = d.getMinutes().toString().padStart(2, "0")
-    return `${dia}/${mes}/${anio} - ${hora}:${minutos}`
+    resultados.splice(idx, 1)
+    actualizar()
 }
 
-function agregarRegistro() 
+function statsVacias()
 {
-    const descripcion = document.getElementById("descripcion").value.trim()
-    const monto = parseFloat(document.getElementById("monto").value)
-    const categoria = document.getElementById("categoria").value
-    const tipo = document.getElementById("tipo").value
-    
-    if(descripcion && !isNaN(monto) && categoria && tipo)
-    {
-        const registro = 
+    const base = {}
+    TEAMS.forEach(t => base[t] = {Equipo:t,PJ:0,PG:0,PP:0,PF:0,PC:0,get DG(){return this.PF-this.PC;},get Pts(){return this.PG*2+this.PP*1;}})
+    return base
+}
+
+function calcularTabla()
+{
+
+    const s = statsVacias()
+
+    resultados.forEach(r => {
+
+        const L = s[r.local]
+        const V = s[r.visitante]
+
+        L.PJ++
+        V.PJ++
+
+        L.PF+=r.pLocal
+        L.PC+=r.pVisitante
+
+        V.PF+=r.pVisitante
+        V.PC+=r.pLocal
+
+        if (r.pLocal > r.pVisitante)
         {
-            descripcion,
-            monto,
-            categoria,
-            tipo,
-            fecha: new Date().toISOString(),
+            L.PG++
+            V.PP++
+        }
+        else
+        {
+            L.PP++
+            V.PG++
         }
 
-        registros.push(registro)
-        localStorage.setItem("registros", JSON.stringify(registros))
-        renderRegistros()
-        document.getElementById("descripcion").value = ""
-        document.getElementById("monto").value = ""
-        document.getElementById("categoria").selectedIndex = 0
-        document.getElementById("tipo").selectedIndex = 0
+    })
 
-    }
+    return Object.values(s).sort((a,b) =>{
+
+        if(b.Pts!==a.Pts) return b.Pts-a.Pts
+        if(b.DG!==a.DG) return b.DG-a.DG
+        if(b.PF!==a.PF) return b.PF-a.PF
+        return a.Equipo.localeCompare(b.Equipo,'es')
+
+    }).map((row,i)=>({...row,Posicion:i+1}))
+
 }
 
-function editarRegistro(index) 
+function renderTabla()
 {
-    const r = registros[index]
-    document.getElementById("descripcion").value = r.descripcion
-    document.getElementById("monto").value = r.monto
-    document.getElementById("categoria").value = r.categoria
-    document.getElementById("tipo").value = r.tipo
-    eliminarRegistro(index)
-}
 
-function eliminarRegistro(index)
-{
-    registros.splice(index, 1)
-    localStorage.setItem("registros", JSON.stringify(registros))
-    renderRegistros()
-}
+    const tabla = calcularTabla()
+    $tbodyTabla.innerHTML = ''
 
-function renderRegistros() 
-{
-    tablaRegistros.innerHTML = ""
-    let totalIngresos = 0,
-    totalGastos = 0;
-      
-    registros.forEach((r, index) => 
-    {
-        const tr = document.createElement("tr");
-        const clase = r.tipo === "ingreso" ? "ingreso" : "gasto";
+    tabla.forEach(r =>{
 
-        tr.innerHTML = `
-            <td class="${clase}">${r.descripcion}</td>
-            <td class="${clase}">$${r.monto.toFixed(0)}</td>
-            <td>${r.categoria}</td>
-            <td>${formatearFecha(r.fecha)}</td>
-            <td><button onclick="editarRegistro(${index})">Editar</button></td>
-            <td><button onclick="eliminarRegistro(${index})">Eliminar</button></td>
-        `
-
-        tablaRegistros.appendChild(tr)
-        if (r.tipo === "ingreso") totalIngresos += r.monto
-        else totalGastos += r.monto
+        const tr=document.createElement('tr')
+        tr.innerHTML=`<td>${r.Posicion}</td><td class='left'>${r.Equipo}</td><td>${r.PJ}</td><td>${r.PG}</td><td>${r.PP}</td><td>${r.PF}</td><td>${r.PC}</td><td>${r.DG}</td>`
+        $tbodyTabla.appendChild(tr)
 
     })
 
-    document.getElementById("totalIngresos").textContent = totalIngresos.toFixed(0)
-    document.getElementById("totalGastos").textContent = totalGastos.toFixed(0)
-
 }
 
-renderCategorias()
-renderRegistros()
+function actualizar()
+{
+    renderResultados()
+    renderTabla()
+}
+
+$form.addEventListener('submit', e => {
+
+    e.preventDefault()
+    const local=$local.value, visitante=$visit.value
+    const pLocal=parseInt($pL.value,10), pVisitante=parseInt($pV.value,10)
+
+    if (local === visitante)
+    {
+        showMsg('No puede jugar el mismo equipo entre si')
+        return
+    }
+
+    if (isNaN(pLocal) || isNaN(pVisitante))
+    {
+        showMsg('Completá los puntos.')
+        return
+    }
+
+    if(pLocal === pVisitante)
+    {
+        showMsg('No se permiten empates.')
+        return
+    }
+
+    resultados.push({local, visitante, pLocal, pVisitante})
+    actualizar()
+    $form.reset()
+
+})
+
+$btnReset.addEventListener('click', () => {
+
+    if (confirm('¿Seguro que querés borrar todos los resultados?'))
+    {
+        resultados=[]
+        actualizar()
+    }
+
+})
+
+initSelectors()
+actualizar()
