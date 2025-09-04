@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liga Metro 2025</title>
+
+    <!-- FAVICON -->
+    <link rel="shortcut icon" href="assets/img/ligametro.png" type="image/x-icon">
+
+    <!-- CSS -->
+     <link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+<body>
+
+    <div class="wrap">
+
+        <div class="title">
+            <span class="badge">Liga Metropolitana 2025</span>
+            <h1>Sur-Oeste C</h1>
+        </div>
+
+        <p class="muted">
+            <a href="cnA.html" class="muted">Centro-Norte A</a>
+            - 
+            <a href="index.html" class="muted">Centro-Norte B</a>
+            -
+            <a href="soC.html" class="muted">Sur-Oeste C</a>
+            -
+            <a href="soD.html" class="muted">Sur-Oeste D</a>
+
+        </p>
+
+        <div class="grid">
+
+            <div class="card">
+
+                <div class="inner">
+
+                    <div class="hd">
+
+                        <h2>Cargar Resultado</h2>
+
+                        <div>
+                            <button class="btn danger" id="btn-reset">RESET</button>
+                            <span class="chip" id="juegos">0 Partidos Cargados</span>
+                        </div>
+
+                    </div>
+
+                    <form id="form-partido">
+
+                        <div class="field">
+
+                            <label for="local">Local</label>
+
+                            <select name="local" id="local" required>
+                                <option value="" disabled selected >Selecciona un Equipo ...</option>
+                            </select>
+
+                        </div>
+
+                        <div class="field">
+
+                            <label for="visitante">Visitante</label>
+
+                            <select name="visitante" id="visitante">
+                                <option value="" disabled selected >Selecciona un Equipo ...</option>
+                            </select>
+
+                        </div>
+
+                        <div class="field">
+                            <label for="pLocal">Puntos Local</label>
+                            <input type="number" min="0" id="pLocal" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="pVisitante">Puntos Visitante</label>
+                            <input type="number" id="pVisitante" min="0" required>
+                        </div>
+
+                        <div class="field">
+                            <button type="submit" class="btn">AGREGAR</button>
+                        </div>
+
+                    </form>
+
+                    <div id="mensaje" class="space"></div>
+
+                    <h2>Resultados Cargados</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+                                <th class="left">Partido</th>
+                                <th>Marcador</th>
+                                <th>Acciones</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="tbody-resultados"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="inner">
+
+                    <div class="hd">
+                        <h2>Tabla de Posiciones</h2>
+                        <span id="criderio" class="chip">Pts · DG · PF</span>
+                    </div>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Posición</th>
+                                <th class="left">Equipo</th>
+                                <th>PJ</th>
+                                <th>PG</th>
+                                <th>PP</th>
+                                <th>PF</th>
+                                <th>PC</th>
+                                <th>DG</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="tbody-tabla"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="assets/js/SOC.js"></script>
+    
+</body>
+</html>
