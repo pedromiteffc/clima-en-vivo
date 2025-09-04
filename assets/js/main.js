@@ -11,7 +11,12 @@ const $tbodyRes = document.getElementById('tbody-resultados')
 const $juegos = document.getElementById('juegos')
 const $btnReset = document.getElementById('btn-reset')
 
-let resultados = []
+let resultados = JSON.parse(localStorage.getItem('resultados') || '[]')
+
+function save()
+{
+    localStorage.setItem('resultados', JSON.stringify(resultados))
+}
 
 function initSelectors()
 {
@@ -60,6 +65,7 @@ function eliminar(idx)
 {
     resultados.splice(idx, 1)
     actualizar()
+    save()
 }
 
 function statsVacias()
@@ -159,6 +165,7 @@ $form.addEventListener('submit', e => {
     }
 
     resultados.push({local, visitante, pLocal, pVisitante})
+    save()
     actualizar()
     $form.reset()
 
@@ -169,6 +176,7 @@ $btnReset.addEventListener('click', () => {
     if (confirm('¿Seguro que querés borrar todos los resultados?'))
     {
         resultados=[]
+        save()
         actualizar()
     }
 
