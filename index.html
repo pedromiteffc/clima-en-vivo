@@ -3,74 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gastos | Ingresos</title>
+    <title>Centro-Norte A | Liga Metro 2025</title>
 
     <!-- FAVICON -->
-    <link rel="shortcut icon" href="assets/img/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/img/ligametro.png" type="image/x-icon">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+     <link rel="stylesheet" href="assets/css/style.css">
 
 </head>
 <body>
 
-    <div class="container">
+    <div class="wrap">
 
-        <h1 class="title"> Gestor de Ingresos | Gastos</h1>
-
-        <div class="entry">
-
-            <input type="text" autocomplete="off" name="descripcion" id="descripcion" placeholder="Descripción de la transacción ..." class="input">
-            <input type="number" autocomplete="off" min="0" name="monto" id="monto" placeholder="Ingrese un monto ..." class="input">
-
-            <select name="categoria" id="categoria" class="select"></select>
-
-            <select name="tipo" id="tipo" class="select">
-                <option value="" disabled selected>Seleccione Ingreso o Gasto</option>
-                <option value="ingreso">Ingreso</option>
-                <option value="gasto">Gasto</option>
-            </select>
-
-            <button onclick="agregarRegistro()">Agregar</button>
-
+        <div class="title">
+            <span class="badge">Liga Metropolitana 2025</span>
+            <h1>Centro-Norte B</h1>
         </div>
 
-        <div class="entry">
+        <p class="muted">Tabla de Posiciones - Centro-Norte B - Liga Metro 2025</p>
 
-            <input type="text" name="nuevaCategoria" id="nuevaCategoria" class="input" placeholder="Crear nueva categoría ...">
-            <button onclick="agregarCategoria()">Agregar nueva categoria</button>
+        <div class="grid">
+
+            <div class="card">
+
+                <div class="inner">
+
+                    <div class="hd">
+
+                        <h2>Cargar Resultado</h2>
+
+                        <div>
+                            <button class="btn danger" id="btn-reset">RESET</button>
+                            <span class="chip" id="juegos">0 Partidos Cargados</span>
+                        </div>
+
+                    </div>
+
+                    <form id="form-partido">
+
+                        <div class="field">
+
+                            <label for="local">Local</label>
+
+                            <select name="local" id="local" required>
+                                <option value="" disabled selected >Selecciona un Equipo ...</option>
+                            </select>
+
+                        </div>
+
+                        <div class="field">
+
+                            <label for="visitante">Visitante</label>
+
+                            <select name="visitante" id="visitante">
+                                <option value="" disabled selected >Selecciona un Equipo ...</option>
+                            </select>
+
+                        </div>
+
+                        <div class="field">
+                            <label for="pLocal">Puntos Local</label>
+                            <input type="number" min="0" id="pLocal" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="pVisitante">Puntos Visitante</label>
+                            <input type="number" id="pVisitante" min="0" required>
+                        </div>
+
+                        <div class="field">
+                            <button type="submit" class="btn">AGREGAR</button>
+                        </div>
+
+                    </form>
+
+                    <div id="mensaje" class="space"></div>
+
+                    <h2>Resultados Cargados</h2>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+                                <th class="left">Partido</th>
+                                <th>Marcador</th>
+                                <th>Acciones</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="tbody-resultados"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="inner">
+
+                    <div class="hd">
+                        <h2>Tabla de Posiciones</h2>
+                        <span id="criderio" class="chip">Pts · DG · PF</span>
+                    </div>
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Posición</th>
+                                <th class="left">Equipo</th>
+                                <th>PJ</th>
+                                <th>PG</th>
+                                <th>PP</th>
+                                <th>PF</th>
+                                <th>PC</th>
+                                <th>DG</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="tbody-tabla"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
 
         </div>
-
-        <table class="tabla" id="tabla">
-
-            <thead>
-
-                <tr>
-
-                    <th>Descripción</th>
-                    <th>Monto</th>
-                    <th>Categoría</th>
-                    <th>Fecha</th>
-                    <th>Editar</th>
-                    <th>Eliminar</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody id="tabla-registros"></tbody>
-
-        </table>
-
-        <div class="totals">
-            Ingresos totales: $<span id="totalIngresos">0</span><br/>
-            Gastos totales: $<span id="totalGastos">0</span>
-        </div>
-
-        <a href="categorias.html" class="editarCategoriaBtn">
-            Editar Categorias
-        </a>
 
     </div>
 
