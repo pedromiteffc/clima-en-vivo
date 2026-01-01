@@ -25,7 +25,6 @@
 
         header { text-align: center; margin-bottom: 1.5rem; }
         
-        /* Navegación por pestañas */
         nav { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
         nav a {
             text-decoration: none;
@@ -47,7 +46,7 @@
             display: grid;
             gap: 1rem;
             grid-template-columns: 1fr 1fr 1fr auto;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem; /* Más espacio antes de la lista */
         }
 
         .input-group.web-mode { grid-template-columns: 1fr 1fr auto; }
@@ -70,18 +69,26 @@
             font-weight: 600;
         }
 
-        /* Lista */
-        #appList { display: grid; gap: 1rem; }
+        /* --- MEJORA DE SEPARACIÓN EN LA LISTA --- */
+        #itemList { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1.5rem; /* Espacio vertical considerable entre boxes */
+        }
+
         .app-card {
             background: var(--card-bg);
-            padding: 1rem 1.5rem;
+            padding: 1.25rem 1.75rem;
             border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 6px solid var(--color-web);
-            animation: fadeIn 0.2s ease;
+            border-left: 8px solid var(--color-web);
+            /* Sombra más profunda para separar visualmente del fondo */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+            animation: fadeIn 0.3s ease;
         }
+        /* ---------------------------------------- */
 
         .card-Juegos { border-left-color: var(--color-juegos); }
         .card-Utilidad { border-left-color: var(--color-utilidad); }
@@ -91,10 +98,11 @@
         .badge {
             font-size: 0.7rem;
             text-transform: uppercase;
-            padding: 2px 8px;
+            padding: 4px 10px;
             border-radius: 999px;
             color: white;
             margin-left: 10px;
+            vertical-align: middle;
         }
         .bg-Juegos { background-color: var(--color-juegos); }
         .bg-Utilidad { background-color: var(--color-utilidad); }
@@ -103,17 +111,21 @@
 
         .delete-btn {
             background: #fff1f2; border: none; color: var(--danger);
-            padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer;
+            padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer;
+            font-weight: 600;
         }
 
-        .actions { text-align: center; margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; }
-        .btn-util { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; cursor: pointer; }
+        .delete-btn:hover { background: var(--danger); color: white; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .actions { text-align: center; margin-top: 3rem; display: flex; justify-content: center; gap: 1rem; }
+        .btn-util { padding: 0.7rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 800px) {
             .input-group { grid-template-columns: 1fr !important; }
             .app-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .delete-btn { width: 100%; }
         }
     </style>
 </head>
@@ -154,7 +166,6 @@
 
 <script>
     let currentTab = 'apps';
-    // Estructura de datos separada
     let data = JSON.parse(localStorage.getItem('pcSetupMasterData')) || { apps: [], webs: [] };
 
     const form = document.getElementById('appForm');
@@ -163,12 +174,9 @@
 
     function switchTab(tab) {
         currentTab = tab;
-        
-        // Actualizar UI de pestañas
         document.getElementById('tabApps').classList.toggle('active', tab === 'apps');
         document.getElementById('tabWebs').classList.toggle('active', tab === 'webs');
         
-        // Mostrar/Ocultar categoría y ajustar grid
         if (tab === 'webs') {
             categorySelect.style.display = 'none';
             categorySelect.required = false;
@@ -180,7 +188,6 @@
             form.classList.remove('web-mode');
             document.getElementById('itemName').placeholder = "Aplicación (ej. Steam)";
         }
-        
         render();
     }
 
@@ -199,9 +206,9 @@
             
             card.innerHTML = `
                 <div>
-                    <strong style="font-size:1.1rem">${item.name}</strong>
+                    <strong style="font-size:1.2rem">${item.name}</strong>
                     ${item.category ? `<span class="badge bg-${item.category}">${item.category}</span>` : ''}
-                    <div style="color:var(--text-secondary); font-size:0.9rem; margin-top:4px;">👤 ${item.user}</div>
+                    <div style="color:var(--text-secondary); font-size:1rem; margin-top:6px;">👤 ${item.user}</div>
                 </div>
                 <button class="delete-btn" onclick="deleteItem(${index})">Eliminar</button>
             `;
@@ -211,16 +218,11 @@
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        
         const newItem = {
             name: document.getElementById('itemName').value,
             user: document.getElementById('itemUser').value,
         };
-
-        if (currentTab === 'apps') {
-            newItem.category = categorySelect.value;
-        }
-
+        if (currentTab === 'apps') newItem.category = categorySelect.value;
         data[currentTab].push(newItem);
         save();
         render();
@@ -228,9 +230,11 @@
     });
 
     window.deleteItem = (index) => {
-        data[currentTab].splice(index, 1);
-        save();
-        render();
+        if(confirm('¿Eliminar este elemento?')) {
+            data[currentTab].splice(index, 1);
+            save();
+            render();
+        }
     }
 
     window.clearAll = () => {
@@ -241,9 +245,7 @@
         }
     }
 
-    function save() {
-        localStorage.setItem('pcSetupMasterData', JSON.stringify(data));
-    }
+    function save() { localStorage.setItem('pcSetupMasterData', JSON.stringify(data)); }
 
     window.exportData = () => {
         const dataStr = JSON.stringify(data, null, 2);
@@ -255,7 +257,6 @@
         a.click();
     }
 
-    // Inicializar
     render();
 </script>
 
