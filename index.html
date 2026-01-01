@@ -1,162 +1,263 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centro-Norte B</title>
+    <title>Setup Recovery Tool</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --danger: #ef4444;
+            --color-juegos: #9333ea;
+            --color-utilidad: #2563eb;
+            --color-config: #ea580c;
+            --color-comun: #0d9488;
+            --color-web: #64748b;
+        }
 
-    <!-- FAVICON -->
-    <link rel="shortcut icon" href="assets/img/ligametro.png" type="image/x-icon">
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 2rem 1rem; }
+        .container { max-width: 900px; margin: 0 auto; }
 
-    <!-- CSS -->
-     <link rel="stylesheet" href="assets/css/style.css">
+        header { text-align: center; margin-bottom: 1.5rem; }
+        
+        /* Navegación por pestañas */
+        nav { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        nav a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-bottom: 2px solid transparent;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        nav a.active { color: var(--primary); border-bottom-color: var(--primary); }
 
+        /* Formulario */
+        .input-group {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            margin-bottom: 2rem;
+        }
+
+        .input-group.web-mode { grid-template-columns: 1fr 1fr auto; }
+
+        input, select {
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        button#addBtn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Lista */
+        #appList { display: grid; gap: 1rem; }
+        .app-card {
+            background: var(--card-bg);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 6px solid var(--color-web);
+            animation: fadeIn 0.2s ease;
+        }
+
+        .card-Juegos { border-left-color: var(--color-juegos); }
+        .card-Utilidad { border-left-color: var(--color-utilidad); }
+        .card-Configuraciones { border-left-color: var(--color-config); }
+        .card-Comunicacion { border-left-color: var(--color-comun); }
+
+        .badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 999px;
+            color: white;
+            margin-left: 10px;
+        }
+        .bg-Juegos { background-color: var(--color-juegos); }
+        .bg-Utilidad { background-color: var(--color-utilidad); }
+        .bg-Configuraciones { background-color: var(--color-config); }
+        .bg-Comunicacion { background-color: var(--color-comun); }
+
+        .delete-btn {
+            background: #fff1f2; border: none; color: var(--danger);
+            padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer;
+        }
+
+        .actions { text-align: center; margin-top: 2rem; display: flex; justify-content: center; gap: 1rem; }
+        .btn-util { padding: 0.6rem 1.2rem; border-radius: 8px; border: none; cursor: pointer; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        @media (max-width: 800px) {
+            .input-group { grid-template-columns: 1fr !important; }
+            .app-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="wrap">
+<div class="container">
+    <header>
+        <h1>🛠️ My Setup Recovery</h1>
+    </header>
 
-        <div class="title">
-            <h1>Liga Metropolitana 2025</h1>
-            <span class="badge">Centro-Norte B</span>
-        </div>
+    <nav id="mainNav">
+        <a id="tabApps" class="active" onclick="switchTab('apps')">APLICACIONES</a>
+        <a id="tabWebs" onclick="switchTab('webs')">PÁGINAS WEB</a>
+    </nav>
 
-        <p class="muted">
-            
-            <a href="cnA.html" class="muted">Centro-Norte A</a>
-            - 
-            <a href="index.html" class="muted">Centro-Norte B</a>
-            -
-            <a href="soC.html" class="muted">Sur-Oeste C</a>
-            -
-            <a href="soD.html" class="muted">Sur-Oeste D</a>
+    <form id="appForm" class="input-group" autocomplete="off">
+        <input type="text" id="itemName" placeholder="Nombre..." required autocomplete="off">
+        <input type="text" id="itemUser" placeholder="Usuario / Correo" required autocomplete="off">
+        
+        <select id="itemCategory">
+            <option value="" disabled selected>Categoría...</option>
+            <option value="Juegos">Juegos 🎮</option>
+            <option value="Utilidad">Utilidad 🔧</option>
+            <option value="Configuraciones">Configuraciones ⚙️</option>
+            <option value="Comunicacion">Comunicación 💬</option>
+        </select>
 
-        </p>
+        <button type="submit" id="addBtn">Agregar</button>
+    </form>
 
-        <div class="grid">
+    <div id="itemList"></div>
 
-            <div class="card">
-
-                <div class="inner">
-
-                    <div class="hd">
-
-                        <h2>Cargar Resultado</h2>
-
-                        <div>
-                            <button class="btn danger" id="btn-reset">RESET</button>
-                            <span class="chip" id="juegos">0 Partidos Cargados</span>
-                        </div>
-
-                    </div>
-
-                    <form id="form-partido">
-
-                        <div class="field">
-
-                            <label for="local">Local</label>
-
-                            <select name="local" id="local" required>
-                                <option value="" disabled selected >Selecciona un Equipo ...</option>
-                            </select>
-
-                        </div>
-
-                        <div class="field">
-
-                            <label for="visitante">Visitante</label>
-
-                            <select name="visitante" id="visitante">
-                                <option value="" disabled selected >Selecciona un Equipo ...</option>
-                            </select>
-
-                        </div>
-
-                        <div class="field">
-                            <label for="pLocal">Puntos Local</label>
-                            <input type="number" min="0" id="pLocal" required>
-                        </div>
-
-                        <div class="field">
-                            <label for="pVisitante">Puntos Visitante</label>
-                            <input type="number" id="pVisitante" min="0" required>
-                        </div>
-
-                        <div class="field">
-                            <button type="submit" class="btn">AGREGAR</button>
-                        </div>
-
-                    </form>
-
-                    <div id="mensaje" class="space"></div>
-
-                    <h2>Resultados Cargados</h2>
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>#</th>
-                                <th class="left">Partido</th>
-                                <th>Marcador</th>
-                                <th>Acciones</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody id="tbody-resultados"></tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="inner">
-
-                    <div class="hd">
-                        <h2>Tabla de Posiciones</h2>
-                        <span id="criderio" class="chip">Pts · DG · PF</span>
-                    </div>
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Posición</th>
-                                <th class="left">Equipo</th>
-                                <th>PJ</th>
-                                <th>PG</th>
-                                <th>PP</th>
-                                <th>PF</th>
-                                <th>PC</th>
-                                <th>DG</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody id="tbody-tabla"></tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </div>
-
+    <div class="actions">
+        <button onclick="exportData()" class="btn-util" style="background:#0f172a; color:white;">💾 Backup Full (.json)</button>
+        <button onclick="clearAll()" class="btn-util" style="background:#fee2e2; color:#991b1b;">🗑️ Limpiar Todo</button>
     </div>
+</div>
 
-    <!-- JAVASCRIPT -->
-    <script src="assets/js/main.js"></script>
-    
+<script>
+    let currentTab = 'apps';
+    // Estructura de datos separada
+    let data = JSON.parse(localStorage.getItem('pcSetupMasterData')) || { apps: [], webs: [] };
+
+    const form = document.getElementById('appForm');
+    const itemContainer = document.getElementById('itemList');
+    const categorySelect = document.getElementById('itemCategory');
+
+    function switchTab(tab) {
+        currentTab = tab;
+        
+        // Actualizar UI de pestañas
+        document.getElementById('tabApps').classList.toggle('active', tab === 'apps');
+        document.getElementById('tabWebs').classList.toggle('active', tab === 'webs');
+        
+        // Mostrar/Ocultar categoría y ajustar grid
+        if (tab === 'webs') {
+            categorySelect.style.display = 'none';
+            categorySelect.required = false;
+            form.classList.add('web-mode');
+            document.getElementById('itemName').placeholder = "Sitio Web (ej. GitHub)";
+        } else {
+            categorySelect.style.display = 'block';
+            categorySelect.required = true;
+            form.classList.remove('web-mode');
+            document.getElementById('itemName').placeholder = "Aplicación (ej. Steam)";
+        }
+        
+        render();
+    }
+
+    function render() {
+        itemContainer.innerHTML = '';
+        const list = data[currentTab];
+
+        if (list.length === 0) {
+            itemContainer.innerHTML = `<p style="text-align:center; color:#94a3b8; margin-top:2rem;">No hay ${currentTab === 'apps' ? 'aplicaciones' : 'páginas'} guardadas.</p>`;
+            return;
+        }
+
+        list.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = `app-card ${item.category ? 'card-' + item.category : ''}`;
+            
+            card.innerHTML = `
+                <div>
+                    <strong style="font-size:1.1rem">${item.name}</strong>
+                    ${item.category ? `<span class="badge bg-${item.category}">${item.category}</span>` : ''}
+                    <div style="color:var(--text-secondary); font-size:0.9rem; margin-top:4px;">👤 ${item.user}</div>
+                </div>
+                <button class="delete-btn" onclick="deleteItem(${index})">Eliminar</button>
+            `;
+            itemContainer.appendChild(card);
+        });
+    }
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const newItem = {
+            name: document.getElementById('itemName').value,
+            user: document.getElementById('itemUser').value,
+        };
+
+        if (currentTab === 'apps') {
+            newItem.category = categorySelect.value;
+        }
+
+        data[currentTab].push(newItem);
+        save();
+        render();
+        form.reset();
+    });
+
+    window.deleteItem = (index) => {
+        data[currentTab].splice(index, 1);
+        save();
+        render();
+    }
+
+    window.clearAll = () => {
+        if(confirm('¿Borrar absolutamente todos los datos?')) {
+            data = { apps: [], webs: [] };
+            save();
+            render();
+        }
+    }
+
+    function save() {
+        localStorage.setItem('pcSetupMasterData', JSON.stringify(data));
+    }
+
+    window.exportData = () => {
+        const dataStr = JSON.stringify(data, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "backup-pc-setup.json";
+        a.click();
+    }
+
+    // Inicializar
+    render();
+</script>
+
 </body>
 </html>
